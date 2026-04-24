@@ -32,6 +32,12 @@ variable "allowed_origin" {
   default     = "*"
 }
 
+variable "ec2_instance_id" {
+  description = "ID da instância EC2 worker (preenchido após bootstrap)"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Tags padrão aplicadas a todos os recursos"
   type        = map(string)

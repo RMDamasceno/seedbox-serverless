@@ -58,6 +58,7 @@ module "lambda" {
   authorizer_lambda_role_arn     = module.iam.authorizer_lambda_role_arn
   worker_trigger_lambda_role_arn = module.iam.worker_trigger_lambda_role_arn
   s3_bucket                      = module.s3.data_bucket_name
+  ec2_instance_id                 = var.ec2_instance_id
   allowed_origin                 = var.allowed_origin
   aws_region                     = var.aws_region
 }

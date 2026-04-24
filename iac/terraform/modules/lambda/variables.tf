@@ -24,7 +24,7 @@ variable "s3_bucket" {
 }
 
 variable "ec2_instance_id" {
-  description = "ID da instância EC2 worker"
+  description = "ID da instância EC2 worker (preenchido após primeiro deploy)"
   type        = string
   default     = ""
 }

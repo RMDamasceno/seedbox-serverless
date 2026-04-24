@@ -176,6 +176,12 @@ aws lambda update-function-configuration \
 
 log "Lambdas atualizadas com EC2_INSTANCE_ID"
 
+# Persistir EC2_INSTANCE_ID no tfvars para futuros terraform apply
+cd "$TF_DIR"
+sed -i '/ec2_instance_id/d' terraform.tfvars
+echo "ec2_instance_id = \"$INSTANCE_ID\"" >> terraform.tfvars
+log "EC2_INSTANCE_ID persistido no terraform.tfvars"
+
 # ─── Build e deploy frontend ───
 
 step "8/8 — Build e deploy do frontend"
