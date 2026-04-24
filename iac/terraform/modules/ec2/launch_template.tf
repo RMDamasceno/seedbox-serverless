@@ -52,7 +52,8 @@ resource "aws_launch_template" "worker" {
   }
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
-    TRANSMISSION_PASSWORD = "PLACEHOLDER"
+    s3_bucket  = var.s3_bucket
+    aws_region = var.aws_region
   }))
 
   tag_specifications {

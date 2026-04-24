@@ -215,9 +215,15 @@ resource "aws_iam_role_policy" "worker_ec2" {
         Resource = var.data_bucket_arn
         Condition = {
           StringLike = {
-            "s3:prefix" = ["queue/*", "downloads/*", "torrents/*"]
+            "s3:prefix" = ["queue/*", "downloads/*", "torrents/*", "worker/*"]
           }
         }
+      },
+      {
+        Sid      = "S3WorkerScripts"
+        Effect   = "Allow"
+        Action   = "s3:GetObject"
+        Resource = "${var.data_bucket_arn}/worker/*"
       },
       {
         Sid      = "EC2StopSelf"
@@ -243,4 +249,9 @@ resource "aws_iam_role_policy" "worker_ec2" {
 resource "aws_iam_instance_profile" "worker" {
   name = "${var.project_name}-worker-instance-profile"
   role = aws_iam_role.worker_ec2.name
+}
+
+resource "aws_iam_role_policy_attachment" "worker_ssm" {
+  role       = aws_iam_role.worker_ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
