@@ -142,6 +142,7 @@ SUBNET_ID=$(terraform output -raw public_subnet_id)
 INSTANCE_ID=$(aws ec2 run-instances \
     --launch-template LaunchTemplateId="$LAUNCH_TEMPLATE_ID" \
     --subnet-id "$SUBNET_ID" \
+    --instance-market-options '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"persistent","InstanceInterruptionBehavior":"stop"}}' \
     --count 1 \
     --query 'Instances[0].InstanceId' \
     --output text \

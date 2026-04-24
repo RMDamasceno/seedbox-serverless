@@ -28,6 +28,7 @@ resource "aws_launch_template" "worker" {
   instance_market_options {
     market_type = "spot"
     spot_options {
+      spot_instance_type             = "persistent"
       instance_interruption_behavior = "stop"
     }
   }
