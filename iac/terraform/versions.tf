@@ -4,11 +4,15 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = ">= 5.0, < 5.80"
+    }
+    archive = {
+      source  = "hashicorp/archive"
+      version = ">= 2.0, < 2.7"
     }
   }
 
-  # Backend local para deploy inicial. Migrar para S3 após primeiro apply.
+  # Backend local para deploy inicial.
   # backend "s3" {
   #   bucket         = "seedbox-terraform-state"
   #   key            = "seedbox-serverless/terraform.tfstate"
