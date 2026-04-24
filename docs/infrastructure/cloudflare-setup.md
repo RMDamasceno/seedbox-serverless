@@ -1,43 +1,43 @@
 # Configuração Cloudflare — Seedbox Serverless AWS
 
-## Pré-requisitos
-
-- Domínio próprio com nameservers apontando para Cloudflare
-- Plano Free (suficiente)
-- Outputs do Terraform: `frontend_website_endpoint` e `api_gateway_url`
+**Domínio:** rafael.damasceno.nom.br
+**Frontend:** seedbox.rafael.damasceno.nom.br
+**API:** api-seedbox.rafael.damasceno.nom.br
 
 ## 1. DNS Records
 
-| Tipo | Nome | Conteúdo | Proxy |
-|------|------|---------|-------|
-| CNAME | `seedbox` | `seedbox-frontend-{account-id}.s3-website-us-east-1.amazonaws.com` | ✅ Proxiado |
-| CNAME | `api.seedbox` | `xxxx.execute-api.us-east-1.amazonaws.com` | ✅ Proxiado |
+No painel Cloudflare, em **DNS → Records**, criar:
+
+| Tipo | Nome | Conteúdo | Proxy | TTL |
+|------|------|---------|-------|-----|
+| CNAME | `seedbox` | `seedbox-frontend-318940352257.s3-website-us-east-1.amazonaws.com` | ✅ Proxied (laranja) | Auto |
+| CNAME | `api-seedbox` | `5dxinr12k0.execute-api.us-east-1.amazonaws.com` | ✅ Proxied (laranja) | Auto |
 
 ## 2. SSL/TLS
 
 Em **SSL/TLS → Overview**:
-- Frontend (`seedbox.dominio.com`): **Full** (S3 Website usa HTTP)
-- API (`api.seedbox.dominio.com`): **Full (strict)** (API Gateway tem certificado válido)
+- Modo: **Full** (não Full strict — S3 Website Endpoint usa HTTP na origem)
 
 Em **SSL/TLS → Edge Certificates**:
-- HSTS: Habilitado (max-age=31536000, includeSubDomains)
+- Always Use HTTPS: **Habilitado**
+- HSTS: **Habilitado** (max-age=31536000, includeSubDomains)
+- Minimum TLS Version: **1.2**
 
 ## 3. Cache Rules
 
-Em **Caching → Cache Rules**, criar regras na ordem:
+Em **Caching → Cache Rules**, criar na ordem:
 
-1. **API — Bypass Cache**
-   - Hostname equals `api.seedbox.dominio.com`
-   - Cache eligibility: Bypass cache
+**Regra 1 — API Bypass Cache:**
+- When: Hostname equals `api-seedbox.rafael.damasceno.nom.br`
+- Then: Bypass cache
 
-2. **index.html — Bypass Cache**
-   - Hostname equals `seedbox.dominio.com` AND URI Path equals `/index.html`
-   - Cache eligibility: Bypass cache
+**Regra 2 — index.html Bypass:**
+- When: Hostname equals `seedbox.rafael.damasceno.nom.br` AND URI Path equals `/index.html`
+- Then: Bypass cache
 
-3. **Assets — Cache 1 ano**
-   - Hostname equals `seedbox.dominio.com` AND URI Path starts with `/assets/`
-   - Cache eligibility: Eligible for cache
-   - Edge TTL: 1 year
+**Regra 3 — Assets Cache 1 ano:**
+- When: Hostname equals `seedbox.rafael.damasceno.nom.br` AND URI Path starts with `/assets/`
+- Then: Eligible for cache, Edge TTL: 1 year
 
 ## 4. Security
 
@@ -45,17 +45,31 @@ Em **Security → WAF**:
 - Bot Fight Mode: **Habilitado**
 
 Em **Security → WAF → Rate limiting rules**:
-- Rule: `api.seedbox.dominio.com/*` → 200 requests/minute → Block 5 minutes
+- When: Hostname equals `api-seedbox.rafael.damasceno.nom.br`
+- Rate: 200 requests per minute
+- Action: Block for 5 minutes
 
 ## 5. Validação
 
+Após configurar, testar:
+
 ```bash
-# Frontend deve retornar 200
-curl -I https://seedbox.dominio.com
+# Frontend (deve retornar 200 com HTML)
+curl -I https://seedbox.rafael.damasceno.nom.br
 
-# API deve retornar 401 (sem token)
-curl -I https://api.seedbox.dominio.com/status
+# API sem token (deve retornar 401)
+curl -I https://api-seedbox.rafael.damasceno.nom.br/status
 
-# Acesso direto ao S3 deve retornar 403
-curl -I http://seedbox-frontend-{account-id}.s3-website-us-east-1.amazonaws.com
+# Login
+curl -s -X POST https://api-seedbox.rafael.damasceno.nom.br/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"password":"SUA_SENHA"}'
+
+# Status com token
+TOKEN="TOKEN_RETORNADO"
+curl -s https://api-seedbox.rafael.damasceno.nom.br/status \
+  -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
+
+# Acesso direto ao S3 (deve retornar 403)
+curl -I http://seedbox-frontend-318940352257.s3-website-us-east-1.amazonaws.com
 ```
