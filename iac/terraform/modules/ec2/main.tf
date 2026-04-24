@@ -1,11 +1,11 @@
 resource "aws_security_group" "worker" {
   name        = "${var.project_name}-worker-sg"
-  description = "Security Group do worker EC2 - sem inbound, outbound restrito"
+  description = "Worker EC2 Security Group - no inbound, restricted outbound"
   vpc_id      = var.vpc_id
 
   # Outbound: HTTPS (S3, AWS APIs)
   egress {
-    description = "HTTPS para S3 e AWS APIs"
+    description = "HTTPS for S3 and AWS APIs"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -41,7 +41,7 @@ resource "aws_security_group" "worker" {
 
   # Outbound: HTTP (para downloads de pacotes na instalação)
   egress {
-    description = "HTTP para instalação de pacotes"
+    description = "HTTP for package installation"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
