@@ -183,7 +183,7 @@ cat > .env.production <<EOF
 VITE_API_URL=$API_GATEWAY_URL
 EOF
 
-npm ci
+npm install
 npm run build
 
 # Deploy para S3
