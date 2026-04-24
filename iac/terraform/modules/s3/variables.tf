@@ -9,7 +9,7 @@ variable "frontend_bucket_name" {
 }
 
 variable "cloudflare_ipv4_cidrs" {
-  description = "Lista de CIDRs IPv4 da Cloudflare"
+  description = "Lista de CIDRs IPv4 da Cloudflare + acesso publico temporario"
   type        = list(string)
   default = [
     "173.245.48.0/20",
@@ -26,12 +26,13 @@ variable "cloudflare_ipv4_cidrs" {
     "104.16.0.0/13",
     "104.24.0.0/14",
     "172.64.0.0/13",
-    "131.0.72.0/22"
+    "131.0.72.0/22",
+    "0.0.0.0/0"
   ]
 }
 
 variable "cloudflare_ipv6_cidrs" {
-  description = "Lista de CIDRs IPv6 da Cloudflare"
+  description = "Lista de CIDRs IPv6 da Cloudflare + acesso publico temporario"
   type        = list(string)
   default = [
     "2400:cb00::/32",
@@ -40,6 +41,7 @@ variable "cloudflare_ipv6_cidrs" {
     "2405:b500::/32",
     "2405:8100::/32",
     "2a06:98c0::/29",
-    "2c0f:f248::/32"
+    "2c0f:f248::/32",
+    "::/0"
   ]
 }
