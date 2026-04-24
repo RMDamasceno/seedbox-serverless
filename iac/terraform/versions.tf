@@ -6,10 +6,6 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0, < 5.80"
     }
-    archive = {
-      source  = "hashicorp/archive"
-      version = ">= 2.0, < 2.7"
-    }
   }
 
   # Backend local para deploy inicial.

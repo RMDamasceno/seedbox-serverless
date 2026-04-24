@@ -100,6 +100,10 @@ EOF
 
 log "terraform.tfvars criado"
 
+# Build Lambda packages
+bash "$PROJECT_ROOT/scripts/deploy/build-lambdas.sh"
+log "Lambda packages built"
+
 cd "$TF_DIR"
 terraform init
 log "Terraform inicializado"

@@ -4,9 +4,9 @@ import json
 import logging
 import re
 
-from .exceptions import ApiError, BadRequestError, NotFoundError, UnauthorizedError
-from .response import error, no_content, success
-from .routes import (
+from exceptions import ApiError, BadRequestError, NotFoundError, UnauthorizedError
+from response import error, no_content, success
+from routes import (
     cancel_download,
     create_download,
     delete_download,
@@ -23,17 +23,12 @@ from .routes import (
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# Regex para extrair {id} das rotas
 ID_PATTERN = re.compile(
     r"^/downloads/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"
 )
 
 
 def handler(event, context):
-    """
-    Handler principal — extrai método e path do event (API Gateway HTTP API
-    format 2.0) e despacha para a função correta.
-    """
     request_context = event.get("requestContext", {})
     http = request_context.get("http", {})
     method = http.get("method", event.get("httpMethod", "GET")).upper()
@@ -59,35 +54,22 @@ def handler(event, context):
         return error("internal_server_error", 500)
 
 
-def _route(method: str, path: str, body: dict, params: dict) -> tuple:
-    """Despacha request para a função correta baseado em método+path."""
-
-    # POST /auth/login
+def _route(method, path, body, params):
     if method == "POST" and path == "/auth/login":
         return handle_login(body)
-
-    # GET /status
     if method == "GET" and path == "/status":
         return get_status()
-
-    # POST /downloads/upload-url
     if method == "POST" and path == "/downloads/upload-url":
         return generate_upload_url(body)
-
-    # POST /downloads
     if method == "POST" and path == "/downloads":
         return create_download(body)
-
-    # GET /downloads
     if method == "GET" and path == "/downloads":
         return list_downloads(params)
 
-    # Rotas com {id}
     match = ID_PATTERN.match(path)
     if match:
         item_id = match.group(1)
         suffix = path[match.end():]
-
         if method == "GET" and suffix == "":
             return get_download(item_id)
         if method == "PATCH" and suffix == "":
@@ -104,8 +86,7 @@ def _route(method: str, path: str, body: dict, params: dict) -> tuple:
     raise NotFoundError(f"Route not found: {method} {path}")
 
 
-def _parse_body(event: dict) -> dict:
-    """Extrai e parseia o body JSON do event."""
+def _parse_body(event):
     body = event.get("body")
     if not body:
         return {}

@@ -1,20 +1,6 @@
-# Pacotes ZIP para deploy
-data "archive_file" "api" {
-  type        = "zip"
-  source_dir  = "${path.root}/../../backend/lambda/api"
-  output_path = "${path.module}/packages/api.zip"
-}
-
-data "archive_file" "authorizer" {
-  type        = "zip"
-  source_dir  = "${path.root}/../../backend/lambda/authorizer"
-  output_path = "${path.module}/packages/authorizer.zip"
-}
-
-data "archive_file" "worker_trigger" {
-  type        = "zip"
-  source_dir  = "${path.root}/../../backend/lambda/worker-trigger"
-  output_path = "${path.module}/packages/worker-trigger.zip"
+# Zips pré-construídos por scripts/deploy/build-lambdas.sh
+locals {
+  packages_dir = "${path.module}/packages"
 }
 
 # ─── Lambda: seedbox-api ───
@@ -26,16 +12,16 @@ resource "aws_lambda_function" "api" {
   runtime          = "python3.12"
   memory_size      = 256
   timeout          = 30
-  filename         = data.archive_file.api.output_path
-  source_code_hash = data.archive_file.api.output_base64sha256
+  filename         = "${local.packages_dir}/api.zip"
+  source_code_hash = filebase64sha256("${local.packages_dir}/api.zip")
 
   environment {
     variables = {
-      S3_BUCKET        = var.s3_bucket
-      EC2_INSTANCE_ID  = var.ec2_instance_id
-      AUTH_SECRET_NAME = var.auth_secret_name
-      ALLOWED_ORIGIN   = var.allowed_origin
-      AWS_REGION_NAME  = var.aws_region
+      S3_BUCKET               = var.s3_bucket
+      EC2_INSTANCE_ID         = var.ec2_instance_id
+      AUTH_SECRET_NAME        = var.auth_secret_name
+      ALLOWED_ORIGIN          = var.allowed_origin
+      AWS_REGION_NAME         = var.aws_region
       WORKER_TRIGGER_FUNCTION = "${var.project_name}-worker-trigger"
     }
   }
@@ -54,8 +40,8 @@ resource "aws_lambda_function" "authorizer" {
   runtime          = "python3.12"
   memory_size      = 128
   timeout          = 5
-  filename         = data.archive_file.authorizer.output_path
-  source_code_hash = data.archive_file.authorizer.output_base64sha256
+  filename         = "${local.packages_dir}/authorizer.zip"
+  source_code_hash = filebase64sha256("${local.packages_dir}/authorizer.zip")
 
   environment {
     variables = {
@@ -77,8 +63,8 @@ resource "aws_lambda_function" "worker_trigger" {
   runtime          = "python3.12"
   memory_size      = 128
   timeout          = 10
-  filename         = data.archive_file.worker_trigger.output_path
-  source_code_hash = data.archive_file.worker_trigger.output_base64sha256
+  filename         = "${local.packages_dir}/worker-trigger.zip"
+  source_code_hash = filebase64sha256("${local.packages_dir}/worker-trigger.zip")
 
   environment {
     variables = {

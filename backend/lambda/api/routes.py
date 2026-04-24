@@ -10,10 +10,10 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import ClientError
 
-from .auth import login
-from .exceptions import BadRequestError, ConflictError, NotFoundError
-from .state_manager import ItemNotFoundError, StateManager
-from .validators import (
+from auth import login
+from exceptions import BadRequestError, ConflictError, NotFoundError
+from state_manager import ItemNotFoundError, StateManager
+from validators import (
     CreateDownloadRequest,
     DownloadUrlRequest,
     LoginRequest,
