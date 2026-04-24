@@ -1,0 +1,7 @@
+aws_region     = "us-east-1"
+aws_account_id = "YOUR_AWS_ACCOUNT_ID"
+project_name   = "seedbox"
+environment    = "dev"
+allowed_origin = "https://seedbox.yourdomain.com"
+vpc_id         = "vpc-YOUR_VPC_ID"
+subnet_id      = "subnet-YOUR_SUBNET_ID"

@@ -1,0 +1,17 @@
+[project]
+name = "seedbox-serverless"
+version = "0.1.0"
+description = "Seedbox Serverless AWS — Download via torrent com custo zero quando ocioso"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B"]
