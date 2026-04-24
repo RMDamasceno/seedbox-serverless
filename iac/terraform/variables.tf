@@ -27,18 +27,9 @@ variable "environment" {
 }
 
 variable "allowed_origin" {
-  description = "Domínio Cloudflare do frontend para CORS"
+  description = "Domínio Cloudflare do frontend para CORS (ex: https://seedbox.dominio.com)"
   type        = string
-}
-
-variable "vpc_id" {
-  description = "ID da VPC para o Security Group do worker"
-  type        = string
-}
-
-variable "subnet_id" {
-  description = "ID da subnet para a instância EC2 worker"
-  type        = string
+  default     = "*"
 }
 
 variable "tags" {

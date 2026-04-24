@@ -8,11 +8,12 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket         = "seedbox-terraform-state"
-    key            = "seedbox-serverless/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "seedbox-terraform-locks"
-  }
+  # Backend local para deploy inicial. Migrar para S3 após primeiro apply.
+  # backend "s3" {
+  #   bucket         = "seedbox-terraform-state"
+  #   key            = "seedbox-serverless/terraform.tfstate"
+  #   region         = "us-east-1"
+  #   encrypt        = true
+  #   dynamodb_table = "seedbox-terraform-locks"
+  # }
 }

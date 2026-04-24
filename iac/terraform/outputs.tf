@@ -1,3 +1,14 @@
+# VPC
+output "vpc_id" {
+  description = "ID da VPC"
+  value       = module.vpc.vpc_id
+}
+
+output "public_subnet_id" {
+  description = "ID da subnet pública"
+  value       = module.vpc.public_subnet_id
+}
+
 # S3
 output "data_bucket_name" {
   description = "Nome do bucket principal"
